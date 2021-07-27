@@ -1,3 +1,10 @@
+helpers do 
+  def current_user
+    User.find_by(id: session[:user_id])
+  end
+end
+
+
 def humanized_time_ago(time_ago_in_minutes)
     if time_ago_in_minutes >= 60
       "#{time_ago_in_minutes / 60} hours ago"
@@ -29,7 +36,7 @@ post '/signup' do
     @user = User.new({ email: email, avatar_url: avatar_url, username: username, password: password })
     
     if @user.save
-      "User #{username} saved!"
+      redirect to('/login')
 
      else 
       erb(:signup)
@@ -48,18 +55,24 @@ post '/login' do
   user = User.find_by(username: username)
 
   #2. if that user exists 
-  if user 
+  if user && user.password == password
 
     #check if that user's password matches the password input 
+    session[:user_id] = user.id
+    redirect to('/')
     #3. if the passwords match
-    if user.password == password
-      "Success!"
-    else 
-      "Password doesn't match"
-    end
-  else 
-    "No User"
+
+   
+      "Success! User with id #{session[:user_id]} is logged in!"
+  else
+    @error_message = "Login Failed."
+    erb(:login)
   end
-  
+
 end 
+
+get '/logout' do
+  session[:user_id] = nil
+  redirect to('/')
+end
 
