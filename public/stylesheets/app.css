@@ -29,3 +29,7 @@ main {
   a.photo {
       transition: padding 0.5s;
   }
+
+  .header-color {
+      background-color: indianred;
+  }
